@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { ManifestoQAInterface } from '@/components/manifesto/ManifestoQAInterface';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookOpen, Users, MessageSquare } from 'lucide-react';
+export const dynamic = 'force-dynamic';
 
 async function getElectionData() {
   try {
@@ -13,18 +14,15 @@ async function getElectionData() {
           include: {
             position: true,
           },
-          orderBy: [
-            { position: { order: 'asc' } },
-            { name: 'asc' }
-          ]
+          orderBy: [{ position: { order: 'asc' } }, { name: 'asc' }],
         },
         association: {
           select: {
             name: true,
             logoUrl: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     if (!election) {
@@ -33,7 +31,7 @@ async function getElectionData() {
 
     // Filter candidates that have manifestos
     const candidatesWithManifestos = election.candidates.filter(
-      candidate => candidate.manifestoSummary || candidate.manifesto
+      (candidate) => candidate.manifestoSummary || candidate.manifesto
     );
 
     return {
@@ -43,7 +41,7 @@ async function getElectionData() {
         description: election.description,
         association: election.association,
       },
-      candidates: candidatesWithManifestos.map(candidate => ({
+      candidates: candidatesWithManifestos.map((candidate) => ({
         id: candidate.id,
         name: candidate.name,
         position: candidate.position.name,
@@ -51,7 +49,7 @@ async function getElectionData() {
         manifestoSummary: candidate.manifestoSummary,
         manifestoUrl: candidate.manifesto,
         photoUrl: candidate.photoUrl,
-      }))
+      })),
     };
   } catch (error) {
     console.error('Error fetching election data:', error);
@@ -127,7 +125,7 @@ export default async function ManifestoPage() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-2 sm:p-3 lg:p-4 flex items-center gap-1 sm:gap-2 lg:gap-3">
               <div className="w-5 h-5 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -136,7 +134,7 @@ export default async function ManifestoPage() {
               <div className="min-w-0 flex-1">
                 <p className="text-xs sm:text-sm text-muted-foreground">Positions</p>
                 <p className="text-sm sm:text-base lg:text-lg font-bold">
-                  {new Set(candidates.map(c => c.positionId)).size}
+                  {new Set(candidates.map((c) => c.positionId)).size}
                 </p>
               </div>
             </CardContent>
@@ -156,10 +154,7 @@ export default async function ManifestoPage() {
         </div>
 
         {/* Main Q&A Interface */}
-        <ManifestoQAInterface 
-          electionId={election.id}
-          candidates={candidates}
-        />
+        <ManifestoQAInterface electionId={election.id} candidates={candidates} />
       </div>
     </div>
   );
